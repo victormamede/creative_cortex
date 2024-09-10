@@ -11,6 +11,7 @@ import {
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { z } from "zod";
+import { shuffle } from "./utils/array";
 
 async function main() {
   const fastify = Fastify({
@@ -85,12 +86,14 @@ async function main() {
     },
     async (req, res) => {
       const { messages } = req.body;
+      // TODO: Optimize this
+      const messagesToTest = shuffle(messages).slice(0, 10);
 
       const { chosenIndex, final, image } = await generateNextPart(
-        messages.map((message) => message.message)
+        messagesToTest.map((message) => message.message)
       );
 
-      const chosenMessage = messages[chosenIndex];
+      const chosenMessage = messagesToTest[chosenIndex];
 
       return {
         chosenMessageExternalId: chosenMessage.externalId,
